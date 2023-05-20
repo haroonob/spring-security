@@ -1,13 +1,10 @@
 package com.haroonob.spring.security.springsecurity.config;
 
-//import com.haroonob.spring.security.springsecurity.SecurityUserDetailsService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-//import org.springframework.core.annotation.Order;
-//import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
@@ -32,20 +29,6 @@ public class SecurityConfiguration {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-//    @Bean
-//    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http.csrf().disable().
-//                securityMatcher("/register**")
-//                .authorizeHttpRequests(authConfig -> {
-//                    authConfig.anyRequest().authenticated();
-//                })
-//                .formLogin()
-//                .loginPage("/login").permitAll().and()
-//                .logout().invalidateHttpSession(true).clearAuthentication(true) .permitAll(); ;
-//
-//        return http.build();
-//    }
-
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -59,14 +42,10 @@ public class SecurityConfiguration {
                                 .loginPage("/login")
                                 .loginProcessingUrl("/login")
                                 .successHandler(new AuthenticationSuccessHandler() {
-
                                     @Override
                                     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                                                         Authentication authentication) throws IOException, ServletException {
-                                        // run custom logics upon successful login
-
                                         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-                                        String username = userDetails.getUsername();
 
                                         String redirectURL = request.getContextPath();
                                         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
@@ -107,13 +86,5 @@ public class SecurityConfiguration {
         return new InMemoryUserDetailsManager(ramesh, admin);
     }
 }
-//
-//    @Bean
-//    public DaoAuthenticationProvider authenticationProvider(SecurityUserDetailsService securityUserDetailsService) {
-//        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-//        authProvider.setUserDetailsService(securityUserDetailsService);
-//        authProvider.setPasswordEncoder(passwordEncoder());
-//
-//        return authProvider;
-//    }
+
 

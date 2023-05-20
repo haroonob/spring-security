@@ -21,7 +21,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.io.IOException;
 import java.util.Set;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
@@ -32,32 +31,14 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-
+        http
                 .authorizeHttpRequests((authorize) ->
-
                         authorize.anyRequest().authenticated()
                 ).formLogin(
                         form -> form
                                 .loginPage("/login")
                                 .loginProcessingUrl("/login")
-                                .successHandler(new AuthenticationSuccessHandler() {
-                                    @Override
-                                    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                                                        Authentication authentication) throws IOException, ServletException {
-                                        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-                                        String redirectURL = request.getContextPath();
-                                        Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
-                                        if (roles.contains("ROLE_ADMIN")) {
-                                            redirectURL = "/admin";
-                                        } else{
-                                            redirectURL = "/welcome";
-                                        }
-
-                                        response.sendRedirect(redirectURL);
-                                    }
-                                })
+                                .successHandler(new AuthenticationSuccessHandlerImpl())
                                 .failureUrl("/error")
                                 .permitAll()
                 ).logout(
@@ -70,7 +51,6 @@ public class SecurityConfiguration {
 
     @Bean
     public UserDetailsService userDetailsService(){
-
         UserDetails ramesh = User.builder()
                 .username("haroon")
                 .password(passwordEncoder().encode("password"))

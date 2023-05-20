@@ -1,6 +1,7 @@
 package com.haroonob.spring.security.springsecurity.config;
 
 //import com.haroonob.spring.security.springsecurity.SecurityUserDetailsService;
+import com.haroonob.spring.security.springsecurity.services.SecurityUserDetailsService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -8,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 //import org.springframework.core.annotation.Order;
 //import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
@@ -32,6 +34,7 @@ public class SecurityConfiguration {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 //    @Bean
 //    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 //        http.csrf().disable().
@@ -70,7 +73,7 @@ public class SecurityConfiguration {
 
                                         String redirectURL = request.getContextPath();
                                         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
-                                        if (roles.contains("ROLE_ADMIN")) {
+                                        if (roles.contains("Admin")) {
                                             redirectURL = "/admin";
                                         } else{
                                             redirectURL = "/welcome";
@@ -90,30 +93,13 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(){
+    public DaoAuthenticationProvider authenticationProvider(SecurityUserDetailsService securityUserDetailsService) {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(securityUserDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
 
-        UserDetails ramesh = User.builder()
-                .username("haroon")
-                .password(passwordEncoder().encode("password"))
-                .roles("USER")
-                .build();
-
-        UserDetails admin = User.builder()
-                .username("admin")
-                .password(passwordEncoder().encode("admin"))
-                .roles("ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(ramesh, admin);
+        return authProvider;
     }
 }
-//
-//    @Bean
-//    public DaoAuthenticationProvider authenticationProvider(SecurityUserDetailsService securityUserDetailsService) {
-//        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-//        authProvider.setUserDetailsService(securityUserDetailsService);
-//        authProvider.setPasswordEncoder(passwordEncoder());
-//
-//        return authProvider;
-//    }
+
 

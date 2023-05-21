@@ -51,7 +51,7 @@ public class SecurityConfiguration {
 
     @Bean
     public UserDetailsService userDetailsService(){
-        UserDetails ramesh = User.builder()
+        UserDetails user = User.builder()
                 .username("haroon")
                 .password(passwordEncoder().encode("password"))
                 .roles("USER")
@@ -63,7 +63,7 @@ public class SecurityConfiguration {
                 .roles("ADMIN")
                 .build();
 
-        return new InMemoryUserDetailsManager(ramesh, admin);
+        return new InMemoryUserDetailsManager(user, admin);
     }
 }
 

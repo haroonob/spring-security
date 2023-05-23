@@ -2,6 +2,7 @@ package com.haroonob.spring.security.springsecurity.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 @Table(name = "user", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class User implements UserDetails {
 
     @Id
@@ -62,7 +64,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return null;
+        return this.username;
     }
 
     @Override

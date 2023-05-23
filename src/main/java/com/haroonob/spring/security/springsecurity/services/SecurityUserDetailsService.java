@@ -19,6 +19,7 @@ public class SecurityUserDetailsService implements UserDetailsService {
             throws UsernameNotFoundException {
         User user = userRepository.findById(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not present"));
+
         return user;
     }
     public void createUser(UserDetails user) {

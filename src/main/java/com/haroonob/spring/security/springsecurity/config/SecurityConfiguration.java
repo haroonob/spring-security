@@ -1,7 +1,7 @@
 package com.haroonob.spring.security.springsecurity.config;
 
 //import com.haroonob.spring.security.springsecurity.SecurityUserDetailsService;
-import com.haroonob.spring.security.springsecurity.services.SecurityUserDetailsService;
+import com.haroonob.spring.security.springsecurity.services.DaoDetailsServiceImpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,21 +12,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import java.io.IOException;
-import java.util.Set;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
@@ -34,20 +23,6 @@ public class SecurityConfiguration {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-//    @Bean
-//    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http.csrf().disable().
-//                securityMatcher("/register**")
-//                .authorizeHttpRequests(authConfig -> {
-//                    authConfig.anyRequest().authenticated();
-//                })
-//                .formLogin()
-//                .loginPage("/login").permitAll().and()
-//                .logout().invalidateHttpSession(true).clearAuthentication(true) .permitAll(); ;
-//
-//        return http.build();
-//    }
 
 
     @Bean
@@ -61,27 +36,7 @@ public class SecurityConfiguration {
                         form -> form
                                 .loginPage("/login")
                                 .loginProcessingUrl("/login")
-                                .successHandler(new AuthenticationSuccessHandler() {
-
-                                    @Override
-                                    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                                                        Authentication authentication) throws IOException, ServletException {
-                                        // run custom logics upon successful login
-
-                                        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-                                        String username = userDetails.getUsername();
-
-                                        String redirectURL = request.getContextPath();
-                                        Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
-                                        if (roles.contains("Admin")) {
-                                            redirectURL = "/admin";
-                                        } else{
-                                            redirectURL = "/welcome";
-                                        }
-
-                                        response.sendRedirect(redirectURL);
-                                    }
-                                })
+                                .successHandler(new AuthenticationSuccessHandlerImpl())
                                 .failureUrl("/error")
                                 .permitAll()
                 ).logout(
@@ -93,7 +48,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public DaoAuthenticationProvider authenticationProvider(SecurityUserDetailsService securityUserDetailsService) {
+    public DaoAuthenticationProvider authenticationProvider(DaoDetailsServiceImpl securityUserDetailsService) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(securityUserDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());

@@ -28,13 +28,13 @@ public class SpringSecurityApplication {
             for (Role role : roles) {
                 rolesRepo.save(role);
             }
-            users.save(new User("haroonob@gmail.com", encoder.encode("password"), true, "Haroon", "Idrees", roles));
+            users.save(new User("haroonob@gmail.com", encoder.encode("password"), true, "Haroon", "Idrees", null));
             users.save(new User("admin@gmail.com", encoder.encode("admin"), true, "admin", "admin", roles));
         };
     }
 
     private static List<Role> getSampleRoles() {
-        List<String> roleNames = Arrays.asList("Admin", "User", "Manager");
+        List<String> roleNames = Arrays.asList("ADMIN");
 
         return roleNames.stream()
                 .map(Role::new)

@@ -34,7 +34,7 @@ public class SpringSecurityApplication {
     }
 
     private static List<Role> getSampleRoles() {
-        List<String> roleNames = Arrays.asList("ADMIN");
+        List<String> roleNames = Arrays.asList("ROLE_ADMIN");
 
         return roleNames.stream()
                 .map(Role::new)
